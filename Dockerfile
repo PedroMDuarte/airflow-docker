@@ -53,7 +53,10 @@ WORKDIR /opt
 RUN git clone https://github.com/PedroMDuarte/incubator-airflow.git
 WORKDIR /opt/incubator-airflow
 RUN git checkout connections-cli
-RUN pip install -e .[devel,all_dbs]
+RUN pip install -e .[devel,all_dbs,celery]
+
+# Create DAGS folder
+RUN mkdir -p /opt/dags_folder
 
 # expose port for airflow log server
 EXPOSE 8793
@@ -67,5 +70,4 @@ EXPOSE 5555
 # expose port for ssh
 EXPOSE 22
 
-COPY ./entrypoint.sh /opt/airflow/entrypoint.sh
 WORKDIR ${AIRFLOW_HOME}
