@@ -8,6 +8,7 @@ MAINTAINER pmd323@gmail.com
 ###############################################################################
 
 RUN apt-get update && apt-get -y install \
+    apt-utils \
     tree \
     htop \
     vim \
@@ -47,13 +48,7 @@ ENV TERM=xterm
 RUN mkdir -p /opt/airflow
 ENV AIRFLOW_HOME=/opt/airflow
 COPY ./conf/airflow.cfg /opt/airflow/airflow.cfg
-COPY ./setup_airflow_connections.py /opt/airflow/setup_airflow_connections.py
 
-WORKDIR /opt
-RUN git clone https://github.com/PedroMDuarte/incubator-airflow.git
-WORKDIR /opt/incubator-airflow
-RUN git checkout connections-cli
-RUN pip install -e .[devel,all_dbs,celery]
 
 # Create DAGS folder
 RUN mkdir -p /opt/dags_folder
@@ -67,9 +62,6 @@ EXPOSE 8080
 # expose port for flower
 EXPOSE 5555
 
-# expose port for ssh
-EXPOSE 22
-
 RUN apt-get install -y supervisor
 ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -77,5 +69,13 @@ RUN apt-get install -y netcat
 
 COPY ./entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh
 RUN chmod +x ${AIRFLOW_HOME}/entrypoint.sh
+
+# Install the airflow version under test
+WORKDIR /opt
+RUN git clone https://github.com/PedroMDuarte/incubator-airflow.git
+WORKDIR /opt/incubator-airflow
+RUN git checkout connections-cli
+RUN pip install -e .[devel,all_dbs,celery]
+
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["./entrypoint.sh"]

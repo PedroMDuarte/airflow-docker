@@ -26,7 +26,7 @@ so they are derived from a single imaged tagged as `airflow-docker`.
 
 #### Step 1. Build `airflow-docker` image
 
-    $ docker build -t airflow-docker .
+    $ docker build -rm -t airflow-docker .
 
 #### Step 2. Bring up services
 
