@@ -2,7 +2,7 @@ version: '2'
 
 services:
   airflow-postgres:
-    container_name: airflow-postgres
+    container_name: airflow-postgres_0ab1
     image: postgres:9.5
     hostname: airflow-postgres
     ports:
@@ -14,7 +14,7 @@ services:
 
   airflow-rabbitmq:
     image: rabbitmq:3-management
-    container_name: airflow-rabbitmq
+    container_name: airflow-rabbitmq_0ab1
     restart: always
     ports:
         - "15672:15672"
@@ -25,10 +25,8 @@ services:
         - RABBITMQ_DEFAULT_VHOST=airflow
 
   airflow-webserver:
-    container_name: airflow-webserver
-    build:
-      context: .
-      dockerfile: Dockerfile-airflow
+    container_name: airflow-webserver_0ab1
+    image: airflow-docker
     hostname: airflow-webserver
     depends_on:
       - airflow-postgres
@@ -46,10 +44,8 @@ services:
     command: airflow webserver -n 1
 
   airflow-scheduler:
-    container_name: airflow-scheduler
-    build:
-      context: .
-      dockerfile: Dockerfile-airflow
+    container_name: airflow-scheduler_0ab1
+    image: airflow-docker
     hostname: airflow-scheduler
     depends_on:
       - airflow-webserver
@@ -62,10 +58,8 @@ services:
       - airflow-rabbitmq
 
   airflow-worker:
-    container_name: airflow-worker
-    build:
-      context: .
-      dockerfile: Dockerfile-airflow
+    container_name: airflow-worker_0ab1
+    image: airflow-docker
     hostname: airflow-worker
     depends_on:
       - airflow-scheduler

@@ -1,6 +1,6 @@
 # AUTHOR: Pedro M Duarte
 # DESCRIPTION: Airflow container
-# BUILD: docker build --rm -t pmd323/airflow-docker .
+# BUILD: docker build --rm -t airflow-docker .
 # SOURCE: https://github.com/PedroMDuarte/airflow-docker
 
 FROM python:3.5
@@ -49,7 +49,11 @@ ENV AIRFLOW_HOME=/opt/airflow
 COPY ./conf/airflow.cfg /opt/airflow/airflow.cfg
 COPY ./setup_airflow_connections.py /opt/airflow/setup_airflow_connections.py
 
-RUN pip install git+https://github.com/PedroMDuarte/incubator-airflow.git@connections-cli
+WORKDIR /opt
+RUN git clone https://github.com/PedroMDuarte/incubator-airflow.git
+WORKDIR /opt/incubator-airflow
+RUN git checkout connections-cli
+RUN pip install -e .[devel,all_dbs]
 
 # expose port for airflow log server
 EXPOSE 8793
