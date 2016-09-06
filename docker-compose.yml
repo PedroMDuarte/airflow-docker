@@ -41,7 +41,7 @@ services:
     links:
       - airflow-postgres
       - airflow-rabbitmq
-    command: airflow webserver -n 1
+    command: webserver
 
   airflow-scheduler:
     container_name: airflow-scheduler_0ab1
@@ -56,6 +56,7 @@ services:
     links:
       - airflow-postgres
       - airflow-rabbitmq
+    command: scheduler
 
   airflow-worker:
     container_name: airflow-worker_0ab1
@@ -73,3 +74,4 @@ services:
     links:
       - airflow-postgres
       - airflow-rabbitmq
+    command: worker

@@ -70,4 +70,12 @@ EXPOSE 5555
 # expose port for ssh
 EXPOSE 22
 
+RUN apt-get install -y supervisor
+ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN apt-get install -y netcat
+
+COPY ./entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh
+RUN chmod +x ${AIRFLOW_HOME}/entrypoint.sh
 WORKDIR ${AIRFLOW_HOME}
+ENTRYPOINT ["./entrypoint.sh"]
