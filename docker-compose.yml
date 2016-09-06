@@ -1,0 +1,81 @@
+version: '2'
+
+services:
+  airflow-postgres:
+    container_name: airflow-postgres
+    image: postgres:9.5
+    hostname: airflow-postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=airflow
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+
+  airflow-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: airflow-rabbitmq
+    restart: always
+    ports:
+        - "15672:15672"
+        - "5672:5672"
+    environment:
+        - RABBITMQ_DEFAULT_USER=airflow
+        - RABBITMQ_DEFAULT_PASS=airflow
+        - RABBITMQ_DEFAULT_VHOST=airflow
+
+  airflow-webserver:
+    container_name: airflow-webserver
+    build:
+      context: .
+      dockerfile: Dockerfile-airflow
+    hostname: airflow-webserver
+    depends_on:
+      - airflow-postgres
+      - airflow-rabbitmq
+    ports:
+      - "8080:8080"  # airflow admin webserver
+      - "5555:5555"  # airflow flower
+    volumes:
+      - ./altx_data_pipeline:/opt/altx_data_pipeline
+    environment:
+      - EXECUTOR=Celery
+    links:
+      - airflow-postgres
+      - airflow-rabbitmq
+    command: airflow webserver -n 1
+
+  airflow-scheduler:
+    container_name: airflow-scheduler
+    build:
+      context: .
+      dockerfile: Dockerfile-airflow
+    hostname: airflow-scheduler
+    depends_on:
+      - airflow-webserver
+    volumes_from:
+      - airflow-webserver
+    environment:
+      - EXECUTOR=Celery
+    links:
+      - airflow-postgres
+      - airflow-rabbitmq
+
+  airflow-worker:
+    container_name: airflow-worker
+    build:
+      context: .
+      dockerfile: Dockerfile-airflow
+    hostname: airflow-worker
+    depends_on:
+      - airflow-scheduler
+    ports:
+      - "8793:8793"  # airflow worker logs server
+    volumes_from:
+      - airflow-webserver
+    environment:
+      - EXECUTOR=Celery
+      - C_FORCE_ROOT=true
+    links:
+      - airflow-postgres
+      - airflow-rabbitmq
