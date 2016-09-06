@@ -35,7 +35,7 @@ services:
       - "8080:8080"  # airflow admin webserver
       - "5555:5555"  # airflow flower
     volumes:
-      - ./altx_data_pipeline:/opt/altx_data_pipeline
+      - ./dags_folder:/opt/dags_folder
     environment:
       - EXECUTOR=Celery
     links:
