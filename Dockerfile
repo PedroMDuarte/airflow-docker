@@ -70,6 +70,8 @@ RUN apt-get install -y netcat
 COPY ./entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh
 RUN chmod +x ${AIRFLOW_HOME}/entrypoint.sh
 
+ENV airflow-updated-on 2016-09-05_21:40
+
 # Install the airflow version under test
 WORKDIR /opt
 RUN git clone https://github.com/PedroMDuarte/incubator-airflow.git
