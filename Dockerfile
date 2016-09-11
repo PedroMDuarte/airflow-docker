@@ -70,7 +70,7 @@ RUN apt-get install -y netcat
 COPY ./entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh
 RUN chmod +x ${AIRFLOW_HOME}/entrypoint.sh
 
-ENV airflow-updated-on 2016-09-05_21:40
+ENV airflow-updated-on 2016-09-11_09:24
 
 # Install the airflow version under test
 WORKDIR /opt
@@ -78,6 +78,9 @@ RUN git clone https://github.com/PedroMDuarte/incubator-airflow.git
 WORKDIR /opt/incubator-airflow
 RUN git checkout connections-cli
 RUN pip install -e .[devel,all_dbs,celery]
+
+# Copy the script that runs only individual unit tests
+COPY ./run_individual_tests.sh ${AIRFLOW_HOME}/run_individual_tests.sh
 
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["./entrypoint.sh"]
